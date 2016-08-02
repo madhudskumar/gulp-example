@@ -1,7 +1,10 @@
 //gulpjs config
 
 var
-    gulp = require('gulp');
+    gulp = require('gulp'),
+    imagemin = require('gulp-imagemin'),
+    newer = require('gulp-newer')
+    
 
 var
     source = 'source/',
@@ -14,6 +17,8 @@ var
 //manage images
 gulp.task('mani', function () {
     return gulp.src(images.in)
+        .pipe(newer(images.out))
+        .pipe(imagemin())
         .pipe(gulp.dest(images.out));
 })
 
