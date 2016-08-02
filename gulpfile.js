@@ -3,7 +3,8 @@
 var
     gulp = require('gulp'),
     imagemin = require('gulp-imagemin'),
-    newer = require('gulp-newer')
+    newer = require('gulp-newer'),
+    del = require('del');
     
 
 var
@@ -13,6 +14,13 @@ var
         in: source + 'images/*.*',
         out: dest + 'images/'
     }
+
+//clean task
+gulp.task('clean', function () {
+    del([
+        dest + '*'
+    ])
+});
 
 //manage images
 gulp.task('mani', function () {
