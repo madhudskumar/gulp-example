@@ -31,6 +31,6 @@ gulp.task('mani', function () {
 })
 
 //default task
-gulp.task('default', function () {
+gulp.task('default', ['mani'], function () {
     
 });
