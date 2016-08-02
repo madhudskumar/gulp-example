@@ -32,5 +32,6 @@ gulp.task('mani', function () {
 
 //default task
 gulp.task('default', ['mani'], function () {
-    
+    //gulp watch
+    gulp.watch(images.in, ['mani']);
 });
