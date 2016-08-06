@@ -7,7 +7,8 @@ var
     newer = require('gulp-newer'),
     del = require('del'),
     pkg = require('./package.json'),
-    htmlClean = require('gulp-htmlclean')
+    htmlClean = require('gulp-htmlclean'),
+    size = require('gulp-size')
 
 var
     devBuild = ((process.env.NODE_ENV || 'development').trim().toLowerCase() !== 'production'),
@@ -52,7 +53,10 @@ gulp.task('html', function(){
     var page =  gulp.src(html.in).pipe(preprocess({context : html.context}))
     
     if(!devBuild){
-        page = page.pipe(htmlClean());
+        page = page
+            .pipe(size({title: 'Html in'}))
+            .pipe(htmlClean())
+            .pipe(size({title: 'Html out'}));
     }
 
     return page.pipe(gulp.dest(html.out));
