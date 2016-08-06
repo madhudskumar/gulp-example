@@ -5,8 +5,9 @@ var
     imagemin = require('gulp-imagemin'),
     preprocess = require('gulp-preprocess'),
     newer = require('gulp-newer'),
-    del = require('del');
-    pkg = require('./package.json');
+    del = require('del'),
+    pkg = require('./package.json'),
+    htmlClean = require('gulp-htmlclean')
 
 var
     devBuild = ((process.env.NODE_ENV || 'development').trim().toLowerCase() !== 'production'),
@@ -48,9 +49,13 @@ gulp.task('mani', function () {
 
 //html task
 gulp.task('html', function(){
-    return gulp.src(html.in)
-        .pipe(preprocess({context : html.context}))
-        .pipe(gulp.dest(html.out))
+    var page =  gulp.src(html.in).pipe(preprocess({context : html.context}))
+    
+    if(!devBuild){
+        page = page.pipe(htmlClean());
+    }
+
+    return page.pipe(gulp.dest(html.out));
 });
 
 //default task
