@@ -3,6 +3,7 @@
 var
     gulp = require('gulp'),
     imagemin = require('gulp-imagemin'),
+    preprocess = require('gulp-preprocess'),
     newer = require('gulp-newer'),
     del = require('del');
     pkg = require('./package.json');
@@ -10,7 +11,17 @@ var
 var
     devBuild = ((process.env.NODE_ENV || 'development').trim().toLowerCase() !== 'production'),
     source = 'source/',
-    dest = 'build/';
+    dest = 'build/',
+    html = {
+        in: source + '*.html',
+        watch: [source + '*.html', source + 'template/**/*.html'],
+        out: dest,
+        context:{
+            devBuild : devBuild,
+            author : pkg.author,
+            version : pkg.version 
+        }
+    },
     images = {
         in: source + 'images/*.*',
         out: dest + 'images/'
@@ -35,8 +46,18 @@ gulp.task('mani', function () {
         .pipe(gulp.dest(images.out));
 });
 
+//html task
+gulp.task('html', function(){
+    return gulp.src(html.in)
+        .pipe(preprocess({context : html.context}))
+        .pipe(gulp.dest(html.out))
+});
+
 //default task
-gulp.task('default', ['mani'], function () {
-    //gulp watch
+gulp.task('default', ['html', 'mani'], function () {
+    //html watch
+    gulp.watch(html.watch, ['html']);
+
+    //images watch
     gulp.watch(images.in, ['mani']);
 });

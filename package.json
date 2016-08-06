@@ -6,12 +6,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Madhu Kumar D S<madhudskumar@live.in>",
   "license": "ISC",
   "devDependencies": {
     "del": "^2.2.1",
     "gulp": "^3.9.1",
     "gulp-imagemin": "^3.0.2",
-    "gulp-newer": "^1.2.0"
+    "gulp-newer": "^1.2.0",
+    "gulp-preprocess": "^2.0.0"
   }
 }
