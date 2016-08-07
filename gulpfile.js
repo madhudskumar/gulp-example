@@ -102,6 +102,9 @@ gulp.task('default', ['html', 'mani', 'sass', 'fonts'], function () {
     //sass watch
     gulp.watch(css.watch, ['sass']);
 
+    //fonts watch
+    gulp.watch(fonts.in, ['fonts']);
+
     //images watch
     gulp.watch(images.in, ['mani']);
 });
