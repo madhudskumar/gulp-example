@@ -7,6 +7,7 @@ var
     newer = require('gulp-newer'),
     del = require('del'),
     pkg = require('./package.json'),
+    sass = require('gulp-sass'),
     htmlClean = require('gulp-htmlclean'),
     size = require('gulp-size')
 
@@ -24,6 +25,17 @@ var
             version : pkg.version 
         }
     },
+    css = {
+        in: source + 'scss/main.sass',
+        watch: [source + 'scss/**/*'],
+        out: dest + 'css/',
+        sassOpts:{
+            outputStyle:'nested',
+            imagePath: '../imaages',
+            precision: 3,
+            errLogToConsole: true
+        }
+    },
     images = {
         in: source + 'images/*.*',
         out: dest + 'images/'
@@ -32,6 +44,13 @@ var
 //show build type
 console.log(pkg.name + " " + pkg.version + ',' + (devBuild ? 'development' : 'production').toString());
 
+
+//build sass
+gulp.task('sass', function(){
+    return gulp.src(css.in)
+        .pipe(sass(css.sassOpts))
+        .pipe(gulp.dest(css.out))
+})
 
 //clean task
 gulp.task('clean', function () {
@@ -63,9 +82,12 @@ gulp.task('html', function(){
 });
 
 //default task
-gulp.task('default', ['html', 'mani'], function () {
+gulp.task('default', ['html', 'mani', 'sass'], function () {
     //html watch
     gulp.watch(html.watch, ['html']);
+
+    //sass watch
+    gulp.watch(css.watch, ['sass']);
 
     //images watch
     gulp.watch(images.in, ['mani']);
