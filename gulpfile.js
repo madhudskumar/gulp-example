@@ -26,7 +26,7 @@ var
         }
     },
     css = {
-        in: source + 'scss/main.sass',
+        in: source + 'scss/main.scss',
         watch: [source + 'scss/**/*'],
         out: dest + 'css/',
         sassOpts:{
@@ -36,6 +36,12 @@ var
             errLogToConsole: true
         }
     },
+
+    fonts = {
+        in: source + 'fonts/*.*',
+        out: css.out + 'fonts/'
+    }
+
     images = {
         in: source + 'images/*.*',
         out: dest + 'images/'
@@ -44,6 +50,13 @@ var
 //show build type
 console.log(pkg.name + " " + pkg.version + ',' + (devBuild ? 'development' : 'production').toString());
 
+
+//fonts
+gulp.task('fonts', function(){
+    return gulp.src(fonts.in)
+        .pipe(newer(fonts.out))
+        .pipe(gulp.dest(fonts.out))
+})
 
 //build sass
 gulp.task('sass', function(){
@@ -82,7 +95,7 @@ gulp.task('html', function(){
 });
 
 //default task
-gulp.task('default', ['html', 'mani', 'sass'], function () {
+gulp.task('default', ['html', 'mani', 'sass', 'fonts'], function () {
     //html watch
     gulp.watch(html.watch, ['html']);
 
