@@ -30,8 +30,8 @@ var
         watch: [source + 'scss/**/*'],
         out: dest + 'css/',
         sassOpts:{
-            outputStyle:'nested',
-            imagePath: '../imaages',
+            outputStyle:'compressed',
+            imagePath: '../images',
             precision: 3,
             errLogToConsole: true
         }
