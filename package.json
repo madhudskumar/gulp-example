@@ -17,6 +17,7 @@
     "gulp-newer": "^1.2.0",
     "gulp-preprocess": "^2.0.0",
     "gulp-sass": "^2.3.2",
-    "gulp-size": "^2.1.0"
+    "gulp-size": "^2.1.0",
+    "pleeease": "^4.0.5"
   }
 }

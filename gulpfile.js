@@ -7,6 +7,8 @@ var
     newer = require('gulp-newer'),
     del = require('del'),
     pkg = require('./package.json'),
+    imacss = require('gulp-imacss'),
+    pleeease = require('gulp-pleeease'),
     sass = require('gulp-sass'),
     htmlClean = require('gulp-htmlclean'),
     size = require('gulp-size')
@@ -25,15 +27,30 @@ var
             version : pkg.version 
         }
     },
+
+    imguri = {
+        in: source + 'images/inline/*',
+        out: source + 'scss/images/',
+        fileName: '_datauri.scss',
+        namespace: 'img'
+    },
+
     css = {
         in: source + 'scss/main.scss',
-        watch: [source + 'scss/**/*'],
+        watch: [source + 'scss/**/*', '!' + imguri.out + imguri.fileName],
         out: dest + 'css/',
         sassOpts:{
             outputStyle:'compressed',
             imagePath: '../images',
             precision: 3,
             errLogToConsole: true
+        },
+        pleeeaseOpts:{
+            autoprefixer:{ browsers: ['last 2 versions', '>2']},
+            rem:['16px'],
+            pseudoElements: true,
+            mqpacker: true,
+            minifier: !devBuild
         }
     },
 
@@ -51,6 +68,16 @@ var
 console.log(pkg.name + " " + pkg.version + ',' + (devBuild ? 'development' : 'production').toString());
 
 
+//imaguri tast
+gulp.task('imguri', function(){
+    return gulp.src(imguri.in)
+        .pipe(imagemin())
+        .pipe(imacss(imguri.fileName, imguri.namespace))
+        .pipe(gulp.dest(imguri.out))
+})
+
+
+
 //fonts
 gulp.task('fonts', function(){
     return gulp.src(fonts.in)
@@ -59,9 +86,12 @@ gulp.task('fonts', function(){
 })
 
 //build sass
-gulp.task('sass', function(){
+gulp.task('sass', ['imguri'], function(){
     return gulp.src(css.in)
         .pipe(sass(css.sassOpts))
+        .pipe(size({title: 'CSS in'}))
+        .pipe(pleeease(css.pleeeaseOpts))
+        .pipe(size({title: 'CSS out'}))
         .pipe(gulp.dest(css.out))
 })
 
@@ -100,7 +130,7 @@ gulp.task('default', ['html', 'mani', 'sass', 'fonts'], function () {
     gulp.watch(html.watch, ['html']);
 
     //sass watch
-    gulp.watch(css.watch, ['sass']);
+    gulp.watch([css.watch, imguri.in], ['sass']);
 
     //fonts watch
     gulp.watch(fonts.in, ['fonts']);
