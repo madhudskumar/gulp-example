@@ -15,7 +15,8 @@ var
     htmlClean = require('gulp-htmlclean'),
     size = require('gulp-size'),
     strip = require('gulp-strip-debug'),
-    uglify = require('gulp-uglify');
+    uglify = require('gulp-uglify'),
+    browsersync = require('browser-sync');
 
 var
     devBuild = ((process.env.NODE_ENV || 'development').trim().toLowerCase() !== 'production'),
@@ -30,6 +31,15 @@ var
             author : pkg.author,
             version : pkg.version 
         }
+    },
+
+    syncOpts = {
+        server:{
+            baseDir:dest,
+            index:'index.html',
+        },
+        open:false,
+        notify:true
     },
 
     imguri = {
@@ -117,6 +127,11 @@ gulp.task('fonts', function(){
         .pipe(gulp.dest(fonts.out))
 })
 
+//browser-sync
+gulp.task('browsersync', function () {
+    browsersync(syncOpts);
+})
+
 //build sass
 gulp.task('sass', ['imguri'], function(){
     return gulp.src(css.in)
@@ -125,6 +140,7 @@ gulp.task('sass', ['imguri'], function(){
         .pipe(pleeease(css.pleeeaseOpts))
         .pipe(size({title: 'CSS out'}))
         .pipe(gulp.dest(css.out))
+        .pipe(browsersync.reload({stream:true}))
 })
 
 //clean task
@@ -157,12 +173,12 @@ gulp.task('html', function(){
 });
 
 //default task
-gulp.task('default', ['html', 'mani', 'sass', 'fonts', 'jsmin'], function () {
+gulp.task('default', ['html', 'mani', 'sass', 'fonts', 'jsmin' , 'browsersync'], function () {
     //html watch
-    gulp.watch(html.watch, ['html']);
+    gulp.watch(html.watch, ['html', browsersync.reload]);
 
     //js watch
-    gulp.watch(js.in, ['jsmin']);
+    gulp.watch(js.in, ['jsmin', browsersync.reload]);
 
     //sass watch
     gulp.watch([css.watch, imguri.in], ['sass']);

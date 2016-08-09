@@ -9,6 +9,7 @@
   "author": "Madhu Kumar D S<madhudskumar@live.in>",
   "license": "ISC",
   "devDependencies": {
+    "browser-sync": "^2.14.0",
     "del": "^2.2.1",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
