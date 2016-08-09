@@ -1,17 +1,21 @@
 //gulpjs config
-
 var
     gulp = require('gulp'),
     imagemin = require('gulp-imagemin'),
     preprocess = require('gulp-preprocess'),
+    deporder = require('gulp-deporder'),
+    concat = require('gulp-concat'),
     newer = require('gulp-newer'),
     del = require('del'),
     pkg = require('./package.json'),
     imacss = require('gulp-imacss'),
-    pleeease = require('gulp-pleeease'),
+    pleeease = require('gulp-preprocess'),
     sass = require('gulp-sass'),
+    jshint = require('gulp-jshint'),
     htmlClean = require('gulp-htmlclean'),
-    size = require('gulp-size')
+    size = require('gulp-size'),
+    strip = require('gulp-strip-debug'),
+    uglify = require('gulp-uglify');
 
 var
     devBuild = ((process.env.NODE_ENV || 'development').trim().toLowerCase() !== 'production'),
@@ -40,18 +44,24 @@ var
         watch: [source + 'scss/**/*', '!' + imguri.out + imguri.fileName],
         out: dest + 'css/',
         sassOpts:{
-            outputStyle:'compressed',
+            outputStyle:'nested',
             imagePath: '../images',
             precision: 3,
             errLogToConsole: true
         },
         pleeeaseOpts:{
-            autoprefixer:{ browsers: ['last 2 versions', '>2']},
-            rem:['16px'],
+            autoprefixer:{ browsers: ['last 2 versions', '> 2%']},
+            rem: ['16px'],
             pseudoElements: true,
             mqpacker: true,
             minifier: !devBuild
         }
+    },
+
+    js = {
+        in: source + 'js/**/*',
+        out:dest + 'js/',
+        fileName:'main.js'
     },
 
     fonts = {
@@ -76,7 +86,29 @@ gulp.task('imguri', function(){
         .pipe(gulp.dest(imguri.out))
 })
 
-
+//js task
+gulp.task('jsmin', function () {
+    if(devBuild){
+        return gulp.src(js.in)
+            .pipe(newer(js.out))
+            .pipe(jshint())
+            .pipe(jshint.reporter('default'))
+            .pipe(jshint.reporter('fail'))
+            .pipe(gulp.dest(js.out));
+    }else{
+        del([
+            dest + 'js/*'
+        ]);
+        return gulp.src(js.in)
+            .pipe(deporder())
+            .pipe(concat(js.fileName))
+            .pipe(size({title: 'js in'}))
+            .pipe(strip())
+            .pipe(uglify())
+            .pipe(size({title: 'js out'}))
+            .pipe(gulp.dest(js.out))
+    }
+})
 
 //fonts
 gulp.task('fonts', function(){
@@ -125,9 +157,12 @@ gulp.task('html', function(){
 });
 
 //default task
-gulp.task('default', ['html', 'mani', 'sass', 'fonts'], function () {
+gulp.task('default', ['html', 'mani', 'sass', 'fonts', 'jsmin'], function () {
     //html watch
     gulp.watch(html.watch, ['html']);
+
+    //js watch
+    gulp.watch(js.in, ['jsmin']);
 
     //sass watch
     gulp.watch([css.watch, imguri.in], ['sass']);
